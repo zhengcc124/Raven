@@ -255,7 +255,8 @@ class SiteBuilder:
         self.config = config
         self.posts: List[Post] = []
         self.base_dir = Path(__file__).parent
-        self.content_dir = self.base_dir.parent / 'content'
+        # content 在仓库根目录，不是 frontend/content
+        self.content_dir = self.base_dir.parent.parent / 'content'
         self.output_dir = self.base_dir.parent / 'dist'
         self.templates_dir = self.base_dir / 'templates'
     
