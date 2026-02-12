@@ -1,0 +1,40 @@
+<!-- 文章详情页 -->
+<article class="post-article">
+    <div class="container">
+        <!-- 文章头部 -->
+        <header class="post-header">
+            <div class="post-meta">
+                <time class="post-date" datetime="{{ datetime }}">
+                    {{ date }}
+                </time>
+                <div class="post-tags">
+                    {{ tags }}
+                </div>
+            </div>
+            <h1 class="post-title">{{ title }}</h1>
+        </header>
+        
+        <!-- 文章内容 -->
+        <div class="post-content">
+            {{ content }}
+        </div>
+        
+        <!-- 文章底部 -->
+        <footer class="post-footer">
+            <div class="post-actions">
+                <a href="../" class="btn btn-back">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    返回首页
+                </a>
+            </div>
+            
+            <!-- 上一篇/下一篇导航 -->
+            <nav class="post-nav">
+                {{ prev_link }}
+                {{ next_link }}
+            </nav>
+        </footer>
+    </div>
+</article>
