@@ -37,7 +37,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
+        # 注意：不使用 cache，因为此仓库没有 requirements.txt
 
       - name: Install dependencies
         run: |
