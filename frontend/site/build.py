@@ -267,7 +267,8 @@ class SiteBuilder:
             return []
         
         posts = []
-        for md_file in sorted(posts_dir.glob('*.md'), reverse=True):
+        # 使用 rglob 递归搜索所有子目录中的 .md 文件
+        for md_file in sorted(posts_dir.rglob('*.md'), reverse=True):
             try:
                 with open(md_file, 'r', encoding='utf-8') as f:
                     content = f.read()
