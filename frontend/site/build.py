@@ -401,7 +401,7 @@ class SiteBuilder:
         return full_html
 
     def _generate_posts_list(self) -> str:
-        """生成文章列表 HTML - 61.life 风格：最新全文，其他摘要"""
+        """生成文章列表 HTML"""
         if not self.posts:
             return '<div class="empty-state"><p>还没有日记，开始写第一篇吧！</p></div>'
 
@@ -420,19 +420,12 @@ class SiteBuilder:
                 ''')
                 current_year = year
 
-            # 格式化日期
-            month_day = post.date.strftime("%m%d")
-            full_date = post.date.strftime("%Y-%m-%d")
-
             if index == 0:
-                # 第一篇：全文展示
+                # 第一篇：全文展示，标题可点击
                 item_html = f'''
                 <article class="post-item post-featured" data-date="{post.date.isoformat()}">
                     <header class="post-item-header">
-                        <time class="post-item-date" datetime="{post.date.isoformat()}">
-                            {full_date}
-                        </time>
-                        <h2 class="post-item-title">{post.title}</h2>
+                        <h2 class="post-item-title"><a href="posts/{post.slug}.html">{post.title}</a></h2>
                     </header>
                     <div class="post-content">
                         {post.content}
@@ -440,16 +433,11 @@ class SiteBuilder:
                 </article>
                 '''
             else:
-                # 其他：只显示标题和日期
+                # 其他：只显示标题
                 item_html = f'''
                 <article class="post-item" data-date="{post.date.isoformat()}">
                     <a href="posts/{post.slug}.html" class="post-link">
-                        <header class="post-item-header">
-                            <time class="post-item-date" datetime="{post.date.isoformat()}">
-                                {month_day}
-                            </time>
-                            <h2 class="post-item-title">{post.title}</h2>
-                        </header>
+                        <h2 class="post-item-title">{post.title}</h2>
                     </a>
                 </article>
                 '''

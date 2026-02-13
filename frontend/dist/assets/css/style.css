@@ -209,6 +209,15 @@ a:hover {
     margin-bottom: var(--spacing-md);
 }
 
+.post-featured .post-item-title a {
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.post-featured .post-item-title a:hover {
+    color: var(--color-accent);
+}
+
 .post-featured .post-content {
     font-size: 1rem;
     line-height: 1.8;
