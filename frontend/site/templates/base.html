@@ -24,6 +24,9 @@
         <div class="container">
             <nav class="site-nav">
                 <a href="{{ base_path }}" class="site-logo">{{ config.title }}</a>
+                <div class="nav-links">
+                    <a href="{{ base_path }}" class="nav-link">日记</a>
+                </div>
             </nav>
         </div>
     </header>
@@ -37,7 +40,7 @@
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
-                Powered by <a href="https://github.com/zhengcc124/Munin" target="_blank">Munin</a>
+                {{ config.footer.copyright }}
             </div>
         </div>
     </footer>

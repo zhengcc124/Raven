@@ -376,17 +376,22 @@ class SiteBuilder:
         return date.strftime(fmt)
 
     def generate_index(self) -> str:
-        """生成首页"""
+        """生成首页（第1页）"""
+        return self._generate_page(1)
+
+    def _generate_page(self, page: int) -> str:
+        """生成指定分页页面"""
         base_template = self.load_template('base.html')
         index_template = self.load_template('index.html')
 
-        # 生成文章列表 HTML
-        posts_list_html = self._generate_posts_list()
+        # 生成文章列表 HTML（带分页）
+        posts_list_html, pagination_html = self._generate_posts_list(page=page)
 
         # 渲染首页内容
         index_content = self.render_template(
             index_template,
-            posts_list=posts_list_html
+            posts_list=posts_list_html,
+            pagination=pagination_html
         )
 
         # 渲染完整页面
@@ -395,20 +400,30 @@ class SiteBuilder:
             title=self.config.get('title', 'Munin Journal'),
             content=index_content,
             body_class='page-index',
-            base_path=''
+            base_path='' if page == 1 else '../'
         )
 
         return full_html
 
-    def _generate_posts_list(self) -> str:
-        """生成文章列表 HTML"""
+    def _generate_posts_list(self, page: int = 1, per_page: int = 10) -> tuple[str, str]:
+        """生成文章列表 HTML，支持分页"""
         if not self.posts:
-            return '<div class="empty-state"><p>还没有日记，开始写第一篇吧！</p></div>'
+            return '<div class="empty-state"><p>还没有日记，开始写第一篇吧！</p></div>', ''
+
+        # 计算分页
+        total_posts = len(self.posts)
+        total_pages = max(1, (total_posts + per_page - 1) // per_page)
+        page = max(1, min(page, total_pages))
+        
+        start_idx = (page - 1) * per_page
+        end_idx = min(start_idx + per_page, total_posts)
+        page_posts = self.posts[start_idx:end_idx]
 
         items = []
         current_year = None
 
-        for index, post in enumerate(self.posts):
+        for idx, post in enumerate(page_posts):
+            global_idx = start_idx + idx
             year = post.date.year
 
             # 年份分组
@@ -420,8 +435,8 @@ class SiteBuilder:
                 ''')
                 current_year = year
 
-            if index == 0:
-                # 第一篇：全文展示，标题可点击
+            if global_idx == 0:
+                # 第一篇（全局）：全文展示
                 item_html = f'''
                 <article class="post-item post-featured" data-date="{post.date.isoformat()}">
                     <header class="post-item-header">
@@ -443,7 +458,38 @@ class SiteBuilder:
                 '''
             items.append(item_html)
 
-        return '\n'.join(items)
+        # 生成分页导航
+        pagination_html = self._generate_pagination(page, total_pages)
+
+        return '\n'.join(items), pagination_html
+
+    def _generate_pagination(self, current_page: int, total_pages: int) -> str:
+        """生成分页导航 HTML"""
+        if total_pages <= 1:
+            return ''
+
+        pages = []
+        
+        # 上一页
+        if current_page > 1:
+            pages.append(f'<a href="page/{current_page - 1}.html" class="pagination-prev">← 上一页</a>')
+        else:
+            pages.append('<span class="pagination-prev disabled">← 上一页</span>')
+        
+        # 页码
+        for i in range(1, total_pages + 1):
+            if i == current_page:
+                pages.append(f'<span class="pagination-current">{i}</span>')
+            else:
+                pages.append(f'<a href="page/{i}.html" class="pagination-link">{i}</a>')
+        
+        # 下一页
+        if current_page < total_pages:
+            pages.append(f'<a href="page/{current_page + 1}.html" class="pagination-next">下一页 →</a>')
+        else:
+            pages.append('<span class="pagination-next disabled">下一页 →</span>')
+
+        return f'<nav class="pagination">{" ".join(pages)}</nav>'
 
     def generate_post_page(self, post: Post) -> str:
         """生成单篇文章页面"""
@@ -540,12 +586,30 @@ class SiteBuilder:
         self.posts = self.load_posts()
         print(f"  找到 {len(self.posts)} 篇文章")
 
-        # 生成首页
+        # 计算分页
+        per_page = 10
+        total_posts = len(self.posts)
+        total_pages = max(1, (total_posts + per_page - 1) // per_page)
+
+        # 生成首页（第1页）
         print("\n🏠 生成首页...")
         index_html = self.generate_index()
         with open(self.output_dir / 'index.html', 'w', encoding='utf-8') as f:
             f.write(index_html)
         print("  已生成: index.html")
+
+        # 生成分页页面（第2页及以后）
+        if total_pages > 1:
+            print(f"\n📄 生成分页页面（共{total_pages}页）...")
+            page_dir = self.output_dir / 'page'
+            page_dir.mkdir()
+            
+            for page in range(2, total_pages + 1):
+                page_html = self._generate_page(page)
+                page_path = page_dir / f"{page}.html"
+                with open(page_path, 'w', encoding='utf-8') as f:
+                    f.write(page_html)
+                print(f"  已生成: page/{page}.html")
 
         # 生成文章页面
         print("\n📝 生成文章页面...")

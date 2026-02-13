@@ -231,6 +231,45 @@ a:hover {
     margin: var(--spacing-md) 0;
 }
 
+/* ============================================
+   分页导航
+   ============================================ */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-2xl);
+    padding-top: var(--spacing-xl);
+    border-top: 1px solid var(--color-border);
+}
+
+.pagination a,
+.pagination span {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.pagination a:hover {
+    color: var(--color-accent);
+    background: var(--color-bg-code);
+}
+
+.pagination .pagination-current {
+    color: var(--color-bg);
+    background: var(--color-text);
+    font-weight: 500;
+}
+
+.pagination .disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .post-featured .post-content p {
     margin-bottom: var(--spacing-md);
 }
