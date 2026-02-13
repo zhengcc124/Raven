@@ -70,11 +70,14 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_USER_ID: ${{ secrets.TELEGRAM_USER_ID }}
+          REPO_NAME: ${{ github.event.repository.name }}
         run: |
           if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_USER_ID" ]; then
+            # 使用上海时区 (Asia/Shanghai)
+            UPDATE_TIME=$(TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M:%S')
             curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
               -d "chat_id=${TELEGRAM_USER_ID}" \
-              -d "text=🎉 日记网站已更新！%0A%0A🔗 ${{ steps.deployment.outputs.page_url }}%0A%0A发布时间: $(date '+%Y-%m-%d %H:%M:%S')" \
+              -d "text=🎉 ${REPO_NAME} 已更新！%0A%0A🔗 ${{ steps.deployment.outputs.page_url }}%0A%0A⏰ 更新时间: ${UPDATE_TIME}" \
               -d "parse_mode=HTML"
           else
             echo "⚠️ Telegram secrets not configured, skipping notification"
