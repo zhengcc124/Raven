@@ -66,10 +66,17 @@ jobs:
         uses: actions/deploy-pages@v4
 
       - name: Notify Telegram (Optional)
-        if: ${{ success() && secrets.TELEGRAM_BOT_TOKEN != '' && secrets.TELEGRAM_USER_ID != '' }}
+        if: ${{ success() }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_USER_ID: ${{ secrets.TELEGRAM_USER_ID }}
         run: |
-          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-            -d "chat_id=${{ secrets.TELEGRAM_USER_ID }}" \
-            -d "text=🎉 日记网站已更新！%0A%0A🔗 ${{ steps.deployment.outputs.page_url }}%0A%0A发布时间: $(date '+%Y-%m-%d %H:%M:%S')" \
-            -d "parse_mode=HTML"
+          if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_USER_ID" ]; then
+            curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+              -d "chat_id=${TELEGRAM_USER_ID}" \
+              -d "text=🎉 日记网站已更新！%0A%0A🔗 ${{ steps.deployment.outputs.page_url }}%0A%0A发布时间: $(date '+%Y-%m-%d %H:%M:%S')" \
+              -d "parse_mode=HTML"
+          else
+            echo "⚠️ Telegram secrets not configured, skipping notification"
+          fi
         continue-on-error: true
