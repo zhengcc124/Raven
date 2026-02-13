@@ -138,36 +138,44 @@ class MarkdownParser:
             return f'<code>{code}</code>'
         html = cls.INLINE_CODE_RE.sub(inline_code_replacer, html)
         
-        # 图片（支持相对路径转换）
-        def image_replacer(match):
+        # 先处理粗体和斜体（避免影响后面的图片/链接 URL）
+        # 但要把图片和链接语法保护起来
+        # 保护图片语法: ![alt](url)
+        protected_images = []
+        def protect_image(match):
             alt = match.group(1)
             src = match.group(2)
-            # 转换相对路径
-            if not src.startswith(('http://', 'https://', '/')):
-                src = '../images/' + src
-            return f'<img src="{src}" alt="{alt}" loading="lazy">'
-        html = cls.IMAGE_RE.sub(image_replacer, html)
+            protected_images.append((alt, src))
+            return f"<!--IMAGE_{len(protected_images)-1}-->"
+        html = cls.IMAGE_RE.sub(protect_image, html)
         
-        # 链接
-        def link_replacer(match):
+        # 保护链接语法: [text](url)
+        protected_links = []
+        def protect_link(match):
             text = match.group(1)
             href = match.group(2)
-            return f'<a href="{href}" target="_blank" rel="noopener">{text}</a>'
-        html = cls.LINK_RE.sub(link_replacer, html)
-        
-        # 标题
-        def heading_replacer(match):
-            level = len(match.group(1))
-            text = match.group(2)
-            slug = re.sub(r'[^\w\s-]', '', text).strip().replace(' ', '-').lower()
-            return f'<h{level} id="{slug}">{text}</h{level}>'
-        html = cls.HEADING_RE.sub(heading_replacer, html)
+            protected_links.append((text, href))
+            return f"<!--LINK_{len(protected_links)-1}-->"
+        html = cls.LINK_RE.sub(protect_link, html)
         
         # 粗体
         html = cls.BOLD_RE.sub(r'<strong>\1\2</strong>', html)
         
         # 斜体
         html = cls.ITALIC_RE.sub(r'<em>\1\2</em>', html)
+        
+        # 恢复并处理图片（支持相对路径转换）
+        for i, (alt, src) in enumerate(protected_images):
+            # 转换相对路径
+            if not src.startswith(('http://', 'https://', '/')):
+                src = '../images/' + src
+            img_html = f'<img src="{src}" alt="{alt}" loading="lazy">'
+            html = html.replace(f"<!--IMAGE_{i}-->", img_html)
+        
+        # 恢复并处理链接
+        for i, (text, href) in enumerate(protected_links):
+            link_html = f'<a href="{href}" target="_blank" rel="noopener">{text}</a>'
+            html = html.replace(f"<!--LINK_{i}-->", link_html)
         
         # 分隔线
         html = cls.HR_RE.sub('<hr>', html)
