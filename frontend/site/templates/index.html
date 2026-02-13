@@ -1,25 +1,8 @@
-<!-- 首页：时间轴布局 -->
-<section class="hero-section">
+<!-- 首页：极简列表布局 -->
+<section class="posts-section">
     <div class="container">
-        <div class="hero-content">
-            <h1 class="hero-title">{{ config.title }}</h1>
-            <p class="hero-subtitle">{{ config.subtitle }}</p>
-            <p class="hero-stats">
-                <span class="stat">
-                    <span class="stat-number">{{ post_count }}</span>
-                    <span class="stat-label">篇日记</span>
-                </span>
-            </p>
+        <div class="posts-list">
+            {{ posts_list }}
         </div>
     </div>
 </section>
-
-<section class="timeline-section" id="timeline">
-    <div class="container">
-        <div class="timeline">
-            {{ timeline }}
-        </div>
-    </div>
-</section>
-
-<!-- 预留扩展：可以添加标签云、统计信息等 -->

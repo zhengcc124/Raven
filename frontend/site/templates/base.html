@@ -6,88 +6,43 @@
     <title>{{ title }}</title>
     <meta name="description" content="{{ config.description }}">
     <meta name="author" content="{{ config.author }}">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
-    
+
     <!-- Styles -->
     <link rel="stylesheet" href="{{ base_path }}assets/css/style.css">
-    
-    <!-- Preconnect -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    
+
     <!-- Open Graph -->
     <meta property="og:title" content="{{ title }}">
     <meta property="og:description" content="{{ config.description }}">
     <meta property="og:type" content="website">
-    
-    <!-- RSS Feed (预留) -->
-    <!-- RSS功能待实现 -->
 </head>
 <body class="{{ body_class }}">
-    <!-- 主题色设置（通过 CSS 变量） -->
-    <style>
-        :root {
-            --color-primary: {{ config.colors.primary }};
-            --color-primary-light: {{ config.colors.primary_light }};
-            --color-primary-dark: {{ config.colors.primary_dark }};
-            --color-bg-main: {{ config.colors.bg_main }};
-            --color-bg-card: {{ config.colors.bg_card }};
-            --color-bg-code: {{ config.colors.bg_code }};
-            --color-text-main: {{ config.colors.text_main }};
-            --color-text-secondary: {{ config.colors.text_secondary }};
-            --color-text-muted: {{ config.colors.text_muted }};
-            --color-border: {{ config.colors.border }};
-            --color-link: {{ config.colors.link }};
-            --color-link-hover: {{ config.colors.link_hover }};
-            --font-heading: {{ config.fonts.heading }};
-            --font-body: {{ config.fonts.body }};
-            --font-mono: {{ config.fonts.mono }};
-            --timeline-line-color: {{ config.timeline.line_color }};
-            --timeline-dot-color: {{ config.timeline.dot_color }};
-        }
-    </style>
-    
     <!-- 头部导航 -->
     <header class="site-header">
         <div class="container">
             <nav class="site-nav">
-                <a href="{{ base_path }}" class="site-logo">
-                    <span class="logo-icon">📝</span>
-                    <span class="logo-text">{{ config.title }}</span>
-                </a>
+                <a href="{{ base_path }}" class="site-logo">{{ config.title }}</a>
                 <div class="nav-links">
-                    <a href="{{ base_path }}" class="nav-link">首页</a>
-                    <a href="{{ base_path }}#timeline" class="nav-link">时间轴</a>
-                    <!-- 预留扩展：可以添加标签页、关于页等 -->
+                    <a href="{{ base_path }}" class="nav-link">日记</a>
                 </div>
             </nav>
         </div>
     </header>
-    
+
     <!-- 主内容区 -->
     <main class="site-main">
         {{ content }}
     </main>
-    
+
     <!-- 页脚 -->
     <footer class="site-footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-copyright">{{ config.footer.copyright }}</p>
-                <!-- 可配置显示 Powered by -->
+                {{ config.footer.copyright }}
             </div>
         </div>
     </footer>
-    
-    <!-- 回到顶部按钮 -->
-    <button class="back-to-top" id="backToTop" aria-label="回到顶部">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 15l-6-6-6 6"/>
-        </svg>
-    </button>
-    
-    <!-- Scripts -->
-    <script src="{{ base_path }}assets/js/main.js" defer></script>
 </body>
 </html>
