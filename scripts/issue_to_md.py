@@ -87,6 +87,12 @@ def issue_to_markdown(issue: dict, journal_label: str, timezone: ZoneInfo) -> tu
         if label["name"] not in {journal_label, "published"}
     ]
     
+    # 清理 body：移除自动生成的日记时间戳
+    body = issue["body"] or ""
+    # 移除 ---\n*自动生成的日记* | YYYY-MM-DD 格式的内容
+    body = re.sub(r'\n?---\n\*自动生成的日记\*\s*\|\s*\d{4}-\d{2}-\d{2}\s*$', '', body, flags=re.MULTILINE)
+    body = body.strip()
+    
     # 构建 frontmatter
     frontmatter = {
         "title": issue["title"],
@@ -98,7 +104,7 @@ def issue_to_markdown(issue: dict, journal_label: str, timezone: ZoneInfo) -> tu
     
     # 构建 Markdown 内容
     frontmatter_yaml = yaml.dump(frontmatter, allow_unicode=True, sort_keys=False)
-    markdown = f"---\n{frontmatter_yaml}---\n\n{issue['body'] or ''}\n"
+    markdown = f"---\n{frontmatter_yaml}---\n\n{body}\n"
 
     # 生成文件路径：YYYY/MMdd.md (简化层级结构)
     year = created_at.strftime("%Y")

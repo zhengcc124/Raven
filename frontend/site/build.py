@@ -401,14 +401,14 @@ class SiteBuilder:
         return full_html
 
     def _generate_posts_list(self) -> str:
-        """生成文章列表 HTML - 极简风格"""
+        """生成文章列表 HTML - 61.life 风格：最新全文，其他摘要"""
         if not self.posts:
             return '<div class="empty-state"><p>还没有日记，开始写第一篇吧！</p></div>'
 
         items = []
         current_year = None
 
-        for post in self.posts:
+        for index, post in enumerate(self.posts):
             year = post.date.year
 
             # 年份分组
@@ -420,21 +420,39 @@ class SiteBuilder:
                 ''')
                 current_year = year
 
-            # 格式化日期为 MMdd 格式
+            # 格式化日期
             month_day = post.date.strftime("%m%d")
+            full_date = post.date.strftime("%Y-%m-%d")
 
-            item_html = f'''
-            <article class="post-item" data-date="{post.date.isoformat()}">
-                <a href="posts/{post.slug}.html" class="post-link">
+            if index == 0:
+                # 第一篇：全文展示
+                item_html = f'''
+                <article class="post-item post-featured" data-date="{post.date.isoformat()}">
                     <header class="post-item-header">
                         <time class="post-item-date" datetime="{post.date.isoformat()}">
-                            {month_day}
+                            {full_date}
                         </time>
                         <h2 class="post-item-title">{post.title}</h2>
                     </header>
-                </a>
-            </article>
-            '''
+                    <div class="post-content">
+                        {post.content}
+                    </div>
+                </article>
+                '''
+            else:
+                # 其他：只显示标题和日期
+                item_html = f'''
+                <article class="post-item" data-date="{post.date.isoformat()}">
+                    <a href="posts/{post.slug}.html" class="post-link">
+                        <header class="post-item-header">
+                            <time class="post-item-date" datetime="{post.date.isoformat()}">
+                                {month_day}
+                            </time>
+                            <h2 class="post-item-title">{post.title}</h2>
+                        </header>
+                    </a>
+                </article>
+                '''
             items.append(item_html)
 
         return '\n'.join(items)
